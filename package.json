@@ -1,0 +1,17 @@
+{
+  "name": "falldown",
+  "version": "1.0.0",
+  "private": "true",
+  "scripts": {
+    "start": "webpack-dev-server --open"
+  },
+  "author": "Bernhard Fritz <bernhard.e.fritz@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "ts-loader": "^8.0.2",
+    "typescript": "^3.9.7",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
+  }
+}
