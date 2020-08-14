@@ -5,6 +5,7 @@ module.exports = {
   entry: './src/index.ts',
   devtool: 'inline-source-map',
   devServer: {
+    clientLogLevel: "silent",
     contentBase: './dist',
   },
   module: {

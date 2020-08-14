@@ -1,3 +1,5 @@
 export default class Ball {
-    constructor(public x: Number, public y: Number) {}
+
+    constructor(public x: number, public y: number) {}
+
 }
