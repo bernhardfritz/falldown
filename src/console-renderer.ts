@@ -31,7 +31,7 @@ export default class ConsoleRenderer implements Renderer {
                 this.grid[platform.y][x] = true;
             }
         }
-        this.grid[state.ball.y][state.ball.x] = true;
+        this.grid[state.ball.r[0]][state.ball.r[1]] = true;
         let out = '';
         for (let row = 0; row < this.rows - 1; row += 2) {
             let line = '';

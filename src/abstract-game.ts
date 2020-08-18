@@ -8,10 +8,10 @@ export default abstract class AbstractGame {
         }
     }
     
-    abstract loop(): void;
+    abstract loop(time: number): void;
 
-    private _loop = () => {
-        this.loop();
+    private _loop = (time: number) => {
+        this.loop(time);
         this.handle = window.requestAnimationFrame(this._loop);
     }
 

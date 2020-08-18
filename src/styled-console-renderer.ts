@@ -49,7 +49,7 @@ export default class StyledConsoleRenderer implements Renderer {
                 this.grid[platform.y][x] = 'g';
             }
         }
-        this.grid[state.ball.y][state.ball.x] = 'r';
+        this.grid[Math.floor(state.ball.r[1])][Math.floor(state.ball.r[0])] = 'r';
         let out = '';
         let styles: string[] = [];
         for (let row = 0; row < this.rows - 1; row += 2) {
