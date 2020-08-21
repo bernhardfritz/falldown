@@ -8,6 +8,10 @@ export default class Vec2 {
         return [ a[0] + b[0], a[1] + b[1] ];
     }
 
+    static sub(a: vec2, b: vec2): vec2 {
+        return [ a[0] - b[0], a[1] - b[1] ];
+    }
+
     static scale(a: vec2, b: number): vec2 {
         return [ a[0] * b, a[1] * b ];
     }
@@ -22,6 +26,14 @@ export default class Vec2 {
 
     static min(a: vec2, b: vec2): vec2 {
         return Vec2.len2(b) < Vec2.len2(a) ? b : a;
+    }
+
+    static max(a: vec2, b: vec2): vec2 {
+        return Vec2.len2(b) > Vec2.len2(a) ? b : a;
+    }
+
+    static normalize(a: vec2): vec2 {
+        return Vec2.scale(a, 1 / Vec2.len(a));
     }
 
 }

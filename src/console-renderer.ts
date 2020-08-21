@@ -27,11 +27,11 @@ export default class ConsoleRenderer implements Renderer {
             }
         }
         for (const platform of state.platforms) {
-            for (let x = Math.min(platform.x1, platform.x2); x <= Math.max(platform.x1, platform.x2); x++) {
-                this.grid[platform.y][x] = true;
+            for (let x = platform.aabb.left; x <= platform.aabb.right; x++) {
+                this.grid[Math.floor(platform.aabb.center[1])][Math.floor(x)] = true;
             }
         }
-        this.grid[state.ball.r[0]][state.ball.r[1]] = true;
+        this.grid[Math.floor(state.ball.aabb.center[1])][Math.floor(state.ball.aabb.center[0])] = true;
         let out = '';
         for (let row = 0; row < this.rows - 1; row += 2) {
             let line = '';

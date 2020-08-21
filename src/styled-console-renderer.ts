@@ -45,11 +45,11 @@ export default class StyledConsoleRenderer implements Renderer {
             }
         }
         for (const platform of state.platforms) {
-            for (let x = Math.min(platform.x1, platform.x2); x <= Math.max(platform.x1, platform.x2); x++) {
-                this.grid[platform.y][x] = 'g';
+            for (let x = platform.aabb.left; x <= platform.aabb.right; x++) {
+                this.grid[Math.floor(platform.aabb.center[1])][Math.floor(x)] = 'g';
             }
         }
-        this.grid[Math.floor(state.ball.r[1])][Math.floor(state.ball.r[0])] = 'r';
+        this.grid[Math.floor(state.ball.aabb.center[1])][Math.floor(state.ball.aabb.center[0])] = 'r';
         let out = '';
         let styles: string[] = [];
         for (let row = 0; row < this.rows - 1; row += 2) {
