@@ -1,10 +1,12 @@
 import Renderer from './renderer';
 import State from './state';
 import StyleBuilder from './style-builder';
+import Utils from './utils';
 
 export default class StyledConsoleRenderer implements Renderer {
 
     private static readonly SPACE = ' ';
+    private static readonly CSS_SPECIFIER = '%c';
     private static readonly BLACK_BLACK = new StyleBuilder().bg('#000').build();
     private static readonly BLACK_GREEN = new StyleBuilder().bg('linear-gradient(#000, #000 50%, #0f0 50%, #0f0)').build();
     private static readonly BLACK_RED = new StyleBuilder().bg('linear-gradient(#000, #000 50%, #f00 50%, #f00)').build();
@@ -27,6 +29,8 @@ export default class StyledConsoleRenderer implements Renderer {
     })();
 
     private readonly grid: string[][];
+    private cachedOut: string = '';
+    private cachedStyles: string[] = [];
 
     constructor(readonly rows: number, readonly cols: number) {
         this.grid = (() => {
@@ -58,14 +62,27 @@ export default class StyledConsoleRenderer implements Renderer {
                 let style = this.grid[row][col] + this.grid[row + 1][col];
                 if (styles.length === 0 || styles[styles.length - 1] !== style) {
                     styles.push(style);
-                    line += '%c';
+                    line += StyledConsoleRenderer.CSS_SPECIFIER;
                 }
                 line += StyledConsoleRenderer.SPACE;
             }
             line += '\n';
             out += line;
         }
-        console.log(out, ...styles.map(style => StyledConsoleRenderer.MAP.get(style)));
+
+        // style reset
+        out += StyledConsoleRenderer.CSS_SPECIFIER;
+        styles.push('');
+
+        if (this.cachedOut === out) {
+            if (Utils.isEqual(this.cachedStyles, styles)) {
+                return;
+            }
+            this.cachedStyles = styles;
+            out += StyledConsoleRenderer.SPACE; // add space if console.log only differs by style in order to prevent browser from showing duplicate log index
+        }
+        this.cachedOut = out;
+        console.log(out, ...styles.map(style => StyledConsoleRenderer.MAP.get(style) || style));
     }
 
 }

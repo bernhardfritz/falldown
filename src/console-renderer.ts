@@ -9,6 +9,7 @@ export default class ConsoleRenderer implements Renderer {
     private static readonly SPACE = ' ';
 
     private readonly grid: boolean[][];
+    private cachedOut: string = '';
 
     constructor(readonly rows: number, readonly cols: number) {
         this.grid = (() => {
@@ -41,6 +42,10 @@ export default class ConsoleRenderer implements Renderer {
             line += '\n';
             out += line;
         }
+        if (this.cachedOut === out) {
+            return;
+        }
+        this.cachedOut = out;
         console.log(out);
     }
 
