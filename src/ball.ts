@@ -1,6 +1,6 @@
+import AABB from "./aabb";
 import Constants from "./constants";
 import { vec2 } from "./vec2";
-import AABB from "./aabb";
 
 export default class Ball {
 

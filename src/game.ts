@@ -1,12 +1,13 @@
+import AABB from "./aabb";
 import AbstractGame from "./abstract-game";
-import Platform from "./platform";
-import State from "./state";
-import Renderer from "./renderer";
+import CanvasRenderer from "./canvas-renderer";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import ConsoleRenderer from "./console-renderer";
+import Platform from "./platform";
+import Renderer from "./renderer";
+import State from "./state";
 import StyledConsoleRenderer from "./styled-console-renderer";
 import Vec2 from "./vec2";
-import AABB from "./aabb";
-import CanvasRenderer from "./canvas-renderer";
 
 export default class Game extends AbstractGame {
 
@@ -57,6 +58,7 @@ export default class Game extends AbstractGame {
         this.render();
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     update(dt: number): void {
         if (this.state.ball.v[1] !== 0) {
             this.state.ball.aabb.center = Vec2.add(this.state.ball.aabb.center, [0, this.state.ball.v[1]]);

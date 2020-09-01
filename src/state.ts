@@ -1,6 +1,6 @@
+import AABB from './aabb';
 import Ball from './ball';
 import Platform from './platform';
-import AABB from './aabb';
 
 export default class State {
 

@@ -14,7 +14,7 @@ export default class StyleBuilder {
     }
 
     build(): string {
-        let styles = [];
+        const styles = [];
         if (this._fg !== undefined) {
             styles.push(`color: ${this._fg};`);
         }

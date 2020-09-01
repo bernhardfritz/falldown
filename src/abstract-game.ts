@@ -2,7 +2,7 @@ export default abstract class AbstractGame {
 
     private handle = 0;
 
-    start() {
+    start(): void {
         if (!this.isRunning()) {
             this.handle = window.requestAnimationFrame(this._loop);
         }
@@ -15,7 +15,7 @@ export default abstract class AbstractGame {
         this.handle = window.requestAnimationFrame(this._loop);
     }
 
-    stop() {
+    stop(): void {
         window.cancelAnimationFrame(this.handle);
         this.handle = 0;
     }

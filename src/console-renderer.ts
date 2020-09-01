@@ -14,7 +14,7 @@ export default class ConsoleRenderer implements Renderer {
     private readonly step: vec2;
     private readonly half_step: vec2;
     private readonly grid: boolean[][];
-    private cachedOut: string = '';
+    private cachedOut = '';
 
     constructor(srcWidth: number, srcHeight: number, dstWidth: number, dstHeight: number) {
         this.rows = Math.floor(dstHeight);
@@ -22,7 +22,7 @@ export default class ConsoleRenderer implements Renderer {
         this.step = [ srcWidth / dstWidth, srcHeight / dstHeight ];
         this.half_step = Vec2.scale(this.step, 0.5);
         this.grid = (() => {
-            let grid: Array<Array<boolean>> = new Array(this.rows);
+            const grid: Array<Array<boolean>> = new Array(this.rows);
             for (let row = 0; row < this.rows; row++) {
                 grid[row] = new Array(this.cols);
             }
@@ -30,7 +30,7 @@ export default class ConsoleRenderer implements Renderer {
         })();
     }
 
-    render(state: State) {
+    render(state: State): void {
         for (let row = 0; row < this.rows; row++) {
             for (let col = 0; col < this.cols; col++) {
                 const point: vec2 = Vec2.add(this.half_step, [col * this.step[0], row * this.step[1]]);

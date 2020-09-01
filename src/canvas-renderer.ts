@@ -9,7 +9,7 @@ export default class CanvasRenderer implements Renderer {
         this.ctx = canvas.getContext('2d');
     }
 
-    render(state: State) {
+    render(state: State): void {
         this.ctx.save();
         this.ctx.fillStyle = '#000';
         this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);

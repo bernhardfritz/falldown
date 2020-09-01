@@ -1,5 +1,5 @@
-import Game from './game';
 import Constants from './constants';
+import Game from './game';
 
 const game = new Game();
 game.start();

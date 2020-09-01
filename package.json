@@ -3,11 +3,16 @@
   "version": "1.0.0",
   "private": "true",
   "scripts": {
-    "start": "webpack-dev-server --open"
+    "start": "webpack-dev-server --open",
+    "lint": "eslint . --ext .ts --fix"
   },
   "author": "Bernhard Fritz <bernhard.e.fritz@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.0.1",
+    "@typescript-eslint/parser": "^4.0.1",
+    "eslint": "^7.8.0",
+    "eslint-plugin-import": "^2.22.0",
     "ts-loader": "^8.0.2",
     "typescript": "^4.0.2",
     "webpack": "^4.44.1",

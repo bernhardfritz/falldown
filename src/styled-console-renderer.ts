@@ -18,7 +18,7 @@ export default class StyledConsoleRenderer implements Renderer {
     private static readonly RED_BLACK = new StyleBuilder().bg('linear-gradient(#f00, #f00 50%, #000 50%, #000)').build();
     private static readonly RED_GREEN = new StyleBuilder().bg('linear-gradient(#f00, #f00 50%, #0f0 50%, #0f0)').build();
     private static readonly MAP: Map<string, string> = (() => {
-        let map: Map<string, string> = new Map();
+        const map: Map<string, string> = new Map();
         map.set('bb', StyledConsoleRenderer.BLACK_BLACK);
         map.set('bg', StyledConsoleRenderer.BLACK_GREEN);
         map.set('br', StyledConsoleRenderer.BLACK_RED);
@@ -36,7 +36,7 @@ export default class StyledConsoleRenderer implements Renderer {
     private readonly step: vec2;
     private readonly half_step: vec2;
     private readonly grid: string[][];
-    private cachedOut: string = '';
+    private cachedOut = '';
     private cachedStyles: string[] = [];
 
     constructor(srcWidth: number, srcHeight: number, dstWidth: number, dstHeight: number) {
@@ -45,7 +45,7 @@ export default class StyledConsoleRenderer implements Renderer {
         this.step = [ srcWidth / dstWidth, srcHeight / dstHeight ];
         this.half_step = Vec2.scale(this.step, 0.5);
         this.grid = (() => {
-            let grid: Array<Array<string>> = new Array(this.rows);
+            const grid: Array<Array<string>> = new Array(this.rows);
             for (let row = 0; row < this.rows; row++) {
                 grid[row] = new Array(this.cols);
             }
@@ -53,7 +53,7 @@ export default class StyledConsoleRenderer implements Renderer {
         })();
     }
 
-    render(state: State) {
+    render(state: State): void {
         for (let row = 0; row < this.rows; row++) {
             for (let col = 0; col < this.cols; col++) {
                 const point: vec2 = Vec2.add(this.half_step, [col * this.step[0], row * this.step[1]]);
@@ -76,11 +76,11 @@ export default class StyledConsoleRenderer implements Renderer {
             }
         }
         let out = '';
-        let styles: string[] = [];
+        const styles: string[] = [];
         for (let row = 0; row < this.rows - 1; row += 2) {
             let line = '';
             for (let col = 0; col < this.cols; col++) {
-                let style = this.grid[row][col] + this.grid[row + 1][col];
+                const style = this.grid[row][col] + this.grid[row + 1][col];
                 if (styles.length === 0 || styles[styles.length - 1] !== style) {
                     styles.push(style);
                     line += StyledConsoleRenderer.CSS_SPECIFIER;
