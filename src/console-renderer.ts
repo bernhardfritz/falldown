@@ -1,5 +1,6 @@
 import Renderer from './renderer';
 import State from './state';
+import Vec2, { vec2 } from './vec2';
 
 export default class ConsoleRenderer implements Renderer {
 
@@ -8,14 +9,22 @@ export default class ConsoleRenderer implements Renderer {
     private static readonly FULL_BLOCK = '\u2588'; // █
     private static readonly SPACE = ' ';
 
+    private readonly rows: number;
+    private readonly cols: number;
+    private readonly step: vec2;
+    private readonly half_step: vec2;
     private readonly grid: boolean[][];
     private cachedOut: string = '';
 
-    constructor(readonly rows: number, readonly cols: number) {
+    constructor(srcWidth: number, srcHeight: number, dstWidth: number, dstHeight: number) {
+        this.rows = Math.floor(dstHeight);
+        this.cols = Math.floor(dstWidth);
+        this.step = [ srcWidth / dstWidth, srcHeight / dstHeight ];
+        this.half_step = Vec2.scale(this.step, 0.5);
         this.grid = (() => {
             let grid: Array<Array<boolean>> = new Array(this.rows);
             for (let row = 0; row < this.rows; row++) {
-                grid[row] = new Array(this.cols).fill(false);
+                grid[row] = new Array(this.cols);
             }
             return grid;
         })();
@@ -24,15 +33,25 @@ export default class ConsoleRenderer implements Renderer {
     render(state: State) {
         for (let row = 0; row < this.rows; row++) {
             for (let col = 0; col < this.cols; col++) {
+                const point: vec2 = Vec2.add(this.half_step, [col * this.step[0], row * this.step[1]]);
+                if (state.ball.aabb.intersectsPoint(point)) {
+                    this.grid[row][col] = true;
+                    continue;
+                }
+                let cont = false;
+                for (const platform of state.platforms) {
+                    if (platform.aabb.intersectsPoint(point)) {
+                        this.grid[row][col] = true;
+                        cont = true;
+                        break;
+                    }
+                }
+                if (cont) {
+                    continue;
+                }
                 this.grid[row][col] = false;
             }
         }
-        for (const platform of state.platforms) {
-            for (let x = platform.aabb.left; x <= platform.aabb.right; x++) {
-                this.grid[Math.floor(platform.aabb.center[1])][Math.floor(x)] = true;
-            }
-        }
-        this.grid[Math.floor(state.ball.aabb.center[1])][Math.floor(state.ball.aabb.center[0])] = true;
         let out = '';
         for (let row = 0; row < this.rows - 1; row += 2) {
             let line = '';

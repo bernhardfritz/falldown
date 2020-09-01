@@ -4,8 +4,7 @@ import AABB from "./aabb";
 
 export default class Ball {
 
-    v: vec2 = [ 0, 0 ];
-    a: vec2 = Constants.G;
+    v: vec2 = [ 0, Constants.VY ];
 
     constructor(public aabb: AABB) {}
 

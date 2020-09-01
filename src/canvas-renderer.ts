@@ -11,16 +11,24 @@ export default class CanvasRenderer implements Renderer {
 
     render(state: State) {
         this.ctx.save();
-        this.ctx.scale(10, 10);
         this.ctx.fillStyle = '#000';
-        this.ctx.fillRect(0, 0, 80, 160);
+        this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
         this.ctx.fillStyle = '#0f0';
         for (const platform of state.platforms) {
-            this.ctx.fillRect(platform.aabb.left, platform.aabb.top, platform.aabb.right - platform.aabb.left, platform.aabb.bottom - platform.aabb.top);
+            const x = platform.aabb.left;
+            const y = platform.aabb.top;
+            const w = 2 * platform.aabb.halfDimension[0];
+            const h = 2 * platform.aabb.halfDimension[1];
+            this.ctx.fillRect(x, y, w, h);
         }
         this.ctx.fillStyle = '#f00';
         this.ctx.beginPath();
-        this.ctx.arc(state.ball.aabb.center[0], state.ball.aabb.center[1], state.ball.aabb.halfDimension[0], 0, 2 * Math.PI);
+        const x = state.ball.aabb.center[0];
+        const y = state.ball.aabb.center[1];
+        const radius = state.ball.aabb.halfDimension[0];
+        const startAngle = 0;
+        const endAngle = 2 * Math.PI;
+        this.ctx.arc(x, y, radius, startAngle, endAngle);
         this.ctx.fill();
         this.ctx.closePath();
         this.ctx.restore();

@@ -5,6 +5,6 @@ import AABB from './aabb';
 export default class State {
 
     public readonly platforms: Array<Platform> = [];
-    public readonly ball = new Ball(new AABB([0.5, 0.5], [0.5, 0.5]));
+    public readonly ball = new Ball(new AABB([0, 0], [0, 0]));
 
 }
