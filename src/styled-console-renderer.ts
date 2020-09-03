@@ -1,41 +1,22 @@
+import Ball from './ball';
+import Platform from './platform';
 import Renderer from './renderer';
 import State from './state';
-import StyleBuilder from './style-builder';
 import Utils from './utils';
 import Vec2, { vec2 } from './vec2';
 
 export default class StyledConsoleRenderer implements Renderer {
 
-    private static readonly SPACE = ' ';
+    private static readonly BACKGROUND_COLOR = new Uint8ClampedArray([0, 0, 0]);
     private static readonly CSS_SPECIFIER = '%c';
-    private static readonly BLACK_BLACK = new StyleBuilder().bg('#000').build();
-    private static readonly BLACK_GREEN = new StyleBuilder().bg('linear-gradient(#000, #000 50%, #0f0 50%, #0f0)').build();
-    private static readonly BLACK_RED = new StyleBuilder().bg('linear-gradient(#000, #000 50%, #f00 50%, #f00)').build();
-    private static readonly GREEN_GREEN = new StyleBuilder().bg('#0f0').build();
-    private static readonly GREEN_BLACK = new StyleBuilder().bg('linear-gradient(#0f0, #0f0 50%, #000 50%, #000)').build();
-    private static readonly GREEN_RED = new StyleBuilder().bg('linear-gradient(#0f0, #0f0 50%, #f00 50%, #f00)').build();
-    private static readonly RED_RED = new StyleBuilder().bg('#f00').build();
-    private static readonly RED_BLACK = new StyleBuilder().bg('linear-gradient(#f00, #f00 50%, #000 50%, #000)').build();
-    private static readonly RED_GREEN = new StyleBuilder().bg('linear-gradient(#f00, #f00 50%, #0f0 50%, #0f0)').build();
-    private static readonly MAP: Map<string, string> = (() => {
-        const map: Map<string, string> = new Map();
-        map.set('bb', StyledConsoleRenderer.BLACK_BLACK);
-        map.set('bg', StyledConsoleRenderer.BLACK_GREEN);
-        map.set('br', StyledConsoleRenderer.BLACK_RED);
-        map.set('gg', StyledConsoleRenderer.GREEN_GREEN);
-        map.set('gb', StyledConsoleRenderer.GREEN_BLACK);
-        map.set('gr', StyledConsoleRenderer.GREEN_RED);
-        map.set('rr', StyledConsoleRenderer.RED_RED);
-        map.set('rb', StyledConsoleRenderer.RED_BLACK);
-        map.set('rg', StyledConsoleRenderer.RED_GREEN);
-        return map;
-    })();
+    private static readonly NEW_LINE = '\n';
+    private static readonly SPACE = ' ';
 
     private readonly rows: number;
     private readonly cols: number;
     private readonly step: vec2;
     private readonly half_step: vec2;
-    private readonly grid: string[][];
+    private readonly data: Uint8ClampedArray;
     private cachedOut = '';
     private cachedStyles: string[] = [];
 
@@ -44,27 +25,26 @@ export default class StyledConsoleRenderer implements Renderer {
         this.cols = Math.floor(dstWidth);
         this.step = [ srcWidth / dstWidth, srcHeight / dstHeight ];
         this.half_step = Vec2.scale(this.step, 0.5);
-        this.grid = (() => {
-            const grid: Array<Array<string>> = new Array(this.rows);
-            for (let row = 0; row < this.rows; row++) {
-                grid[row] = new Array(this.cols);
-            }
-            return grid;
-        })();
+        this.data = new Uint8ClampedArray(this.rows * this.cols * 3);
     }
 
     render(state: State): void {
         for (let row = 0; row < this.rows; row++) {
+            const y = this.half_step[1] + row * this.step[1];
             for (let col = 0; col < this.cols; col++) {
-                const point: vec2 = Vec2.add(this.half_step, [col * this.step[0], row * this.step[1]]);
-                if (state.ball.aabb.intersectsPoint(point)) {
-                    this.grid[row][col] = 'r';
+                const x = this.half_step[0] + col * this.step[0];
+                if (state.ball.aabb.intersectsPoint(x, y)) {
+                    this.data[row * this.cols * 3 + col * 3 + 0] = Ball.COLOR[0];
+                    this.data[row * this.cols * 3 + col * 3 + 1] = Ball.COLOR[1];
+                    this.data[row * this.cols * 3 + col * 3 + 2] = Ball.COLOR[2];
                     continue;
                 }
                 let cont = false;
                 for (const platform of state.platforms) {
-                    if (platform.aabb.intersectsPoint(point)) {
-                        this.grid[row][col] = 'g';
+                    if (platform.aabb.intersectsPoint(x, y)) {
+                        this.data[row * this.cols * 3 + col * 3 + 0] = Platform.COLOR[0];
+                        this.data[row * this.cols * 3 + col * 3 + 1] = Platform.COLOR[1];
+                        this.data[row * this.cols * 3 + col * 3 + 2] = Platform.COLOR[2];
                         cont = true;
                         break;
                     }
@@ -72,7 +52,9 @@ export default class StyledConsoleRenderer implements Renderer {
                 if (cont) {
                     continue;
                 }
-                this.grid[row][col] = 'b';
+                this.data[row * this.cols * 3 + col * 3 + 0] = StyledConsoleRenderer.BACKGROUND_COLOR[0];
+                this.data[row * this.cols * 3 + col * 3 + 1] = StyledConsoleRenderer.BACKGROUND_COLOR[1];
+                this.data[row * this.cols * 3 + col * 3 + 2] = StyledConsoleRenderer.BACKGROUND_COLOR[2];
             }
         }
         let out = '';
@@ -80,14 +62,16 @@ export default class StyledConsoleRenderer implements Renderer {
         for (let row = 0; row < this.rows - 1; row += 2) {
             let line = '';
             for (let col = 0; col < this.cols; col++) {
-                const style = this.grid[row][col] + this.grid[row + 1][col];
+                const from = `rgb(${this.data[row * this.cols * 3 + col * 3 + 0]},${this.data[row * this.cols * 3 + col * 3 + 1]},${this.data[row * this.cols * 3 + col * 3 + 2]})`;
+                const to = `rgb(${this.data[(row + 1) * this.cols * 3 + col * 3 + 0]},${this.data[(row + 1) * this.cols * 3 + col * 3 + 1]},${this.data[(row + 1) * this.cols * 3 + col * 3 + 2]})`;
+                const style = `background:linear-gradient(${from}, ${from} 50%, ${to} 50%, ${to})`;
                 if (styles.length === 0 || styles[styles.length - 1] !== style) {
                     styles.push(style);
                     line += StyledConsoleRenderer.CSS_SPECIFIER;
                 }
                 line += StyledConsoleRenderer.SPACE;
             }
-            line += '\n';
+            line += StyledConsoleRenderer.NEW_LINE;
             out += line;
         }
 
@@ -103,7 +87,8 @@ export default class StyledConsoleRenderer implements Renderer {
             out += StyledConsoleRenderer.SPACE; // add space if console.log only differs by style in order to prevent browser from showing duplicate log index
         }
         this.cachedOut = out;
-        console.log(out, ...styles.map(style => StyledConsoleRenderer.MAP.get(style) || style));
+
+        console.log(out, ...styles);
     }
 
 }

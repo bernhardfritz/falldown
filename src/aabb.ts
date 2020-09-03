@@ -9,8 +9,8 @@ export default class AABB {
         return Math.abs(this.center[0] - that.center[0]) <= sum[0] && Math.abs(this.center[1] - that.center[1]) <= sum[1];
     }
 
-    intersectsPoint(point: vec2): boolean {
-        return Math.abs(this.center[0] - point[0]) <= this.halfDimension[0] && Math.abs(this.center[1] - point[1]) <= this.halfDimension[1];
+    intersectsPoint(x: number, y: number): boolean {
+        return Math.abs(this.center[0] - x) <= this.halfDimension[0] && Math.abs(this.center[1] - y) <= this.halfDimension[1];
     }
 
     get left(): number {

@@ -7,6 +7,7 @@ export default class ConsoleRenderer implements Renderer {
     private static readonly UPPER_HALF_BLOCK = '\u2580'; // ▀
     private static readonly LOWER_HALF_BLOCK = '\u2584'; // ▄
     private static readonly FULL_BLOCK = '\u2588'; // █
+    private static readonly NEW_LINE = '\n';
     private static readonly SPACE = ' ';
 
     private readonly rows: number;
@@ -32,15 +33,16 @@ export default class ConsoleRenderer implements Renderer {
 
     render(state: State): void {
         for (let row = 0; row < this.rows; row++) {
+            const y = this.half_step[1] + row * this.step[1];
             for (let col = 0; col < this.cols; col++) {
-                const point: vec2 = Vec2.add(this.half_step, [col * this.step[0], row * this.step[1]]);
-                if (state.ball.aabb.intersectsPoint(point)) {
+                const x = this.half_step[0] + col * this.step[0];
+                if (state.ball.aabb.intersectsPoint(x, y)) {
                     this.grid[row][col] = true;
                     continue;
                 }
                 let cont = false;
                 for (const platform of state.platforms) {
-                    if (platform.aabb.intersectsPoint(point)) {
+                    if (platform.aabb.intersectsPoint(x, y)) {
                         this.grid[row][col] = true;
                         cont = true;
                         break;
@@ -58,7 +60,7 @@ export default class ConsoleRenderer implements Renderer {
             for (let col = 0; col < this.cols; col++) {
                 line += this.grid[row][col] ? this.grid[row + 1][col] ? ConsoleRenderer.FULL_BLOCK : ConsoleRenderer.UPPER_HALF_BLOCK : this.grid[row + 1][col] ? ConsoleRenderer.LOWER_HALF_BLOCK : ConsoleRenderer.SPACE;
             }
-            line += '\n';
+            line += ConsoleRenderer.NEW_LINE;
             out += line;
         }
         if (this.cachedOut === out) {

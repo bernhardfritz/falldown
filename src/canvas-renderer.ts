@@ -3,7 +3,7 @@ import State from "./state";
 
 export default class CanvasRenderer implements Renderer {
 
-    readonly ctx: CanvasRenderingContext2D;
+    protected readonly ctx: CanvasRenderingContext2D;
 
     constructor(private canvas: HTMLCanvasElement) {
         this.ctx = canvas.getContext('2d');

@@ -4,7 +4,8 @@
   "private": "true",
   "scripts": {
     "start": "webpack-dev-server --open",
-    "lint": "eslint . --ext .ts --fix"
+    "lint": "eslint . --ext .ts --fix",
+    "build": "webpack --mode=production"
   },
   "author": "Bernhard Fritz <bernhard.e.fritz@gmail.com>",
   "license": "MIT",
