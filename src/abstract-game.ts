@@ -1,6 +1,12 @@
 export default abstract class AbstractGame {
 
+    private targetFrametime: number | undefined = undefined;
     private handle = 0;
+    protected time = 0;
+
+    set targetFps(targetFps: number) {
+        this.targetFrametime = 1000 / targetFps;
+    }
 
     start(): void {
         if (!this.isRunning()) {
@@ -8,11 +14,20 @@ export default abstract class AbstractGame {
         }
     }
     
-    abstract loop(time: number): void;
+    abstract loop(dt: number): void;
 
     private _loop = (time: number) => {
-        this.loop(time);
         this.handle = window.requestAnimationFrame(this._loop);
+        const dt = time - this.time;
+        if (this.targetFrametime !== undefined) {
+            if (dt > this.targetFrametime) {
+                this.time = time - (dt % this.targetFrametime);
+                this.loop(dt);
+            }
+        } else {
+            this.time = time;
+            this.loop(dt);
+        }
     }
 
     stop(): void {

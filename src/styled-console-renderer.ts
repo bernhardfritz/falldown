@@ -33,23 +33,16 @@ export default class StyledConsoleRenderer implements Renderer {
             const y = this.half_step[1] + row * this.step[1];
             for (let col = 0; col < this.cols; col++) {
                 const x = this.half_step[0] + col * this.step[0];
-                if (state.ball.aabb.intersectsPoint(x, y)) {
+                if (state.ball.aabb.containsPoint(x, y)) {
                     this.data[row * this.cols * 3 + col * 3 + 0] = Ball.COLOR[0];
                     this.data[row * this.cols * 3 + col * 3 + 1] = Ball.COLOR[1];
                     this.data[row * this.cols * 3 + col * 3 + 2] = Ball.COLOR[2];
                     continue;
                 }
-                let cont = false;
-                for (const platform of state.platforms) {
-                    if (platform.aabb.intersectsPoint(x, y)) {
-                        this.data[row * this.cols * 3 + col * 3 + 0] = Platform.COLOR[0];
-                        this.data[row * this.cols * 3 + col * 3 + 1] = Platform.COLOR[1];
-                        this.data[row * this.cols * 3 + col * 3 + 2] = Platform.COLOR[2];
-                        cont = true;
-                        break;
-                    }
-                }
-                if (cont) {
+                if (state.platforms.collides({ minX: x, maxX: x, minY: y, maxY: y })) {
+                    this.data[row * this.cols * 3 + col * 3 + 0] = Platform.COLOR[0];
+                    this.data[row * this.cols * 3 + col * 3 + 1] = Platform.COLOR[1];
+                    this.data[row * this.cols * 3 + col * 3 + 2] = Platform.COLOR[2];
                     continue;
                 }
                 this.data[row * this.cols * 3 + col * 3 + 0] = StyledConsoleRenderer.BACKGROUND_COLOR[0];

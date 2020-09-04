@@ -2,6 +2,7 @@ import Constants from './constants';
 import Game from './game';
 
 const game = new Game();
+game.targetFps = 24;
 game.start();
 
 document.addEventListener('keydown', event => {

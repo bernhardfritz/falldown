@@ -11,4 +11,4 @@ yarn install
 yarn start
 ```
 
-![screenshot](https://i.imgur.com/aQV7wAh.gif)
+![screenshot](https://i.imgur.com/qerHw3h.gif)
