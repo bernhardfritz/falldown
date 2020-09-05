@@ -2,7 +2,7 @@ export default class Utils {
 
     private constructor() {}
 
-    static isEqual<T>(a: T[], b: T[]): boolean {
+    static isEqual<T>(a: ReadonlyArray<T>, b: ReadonlyArray<T>): boolean {
         if (a === b) {
             return true;
         }

@@ -4,7 +4,15 @@ import MyRBush from './my-rbush';
 
 export default class State {
 
-    public readonly platforms: MyRBush = new MyRBush();
-    public readonly ball = new Ball(new AABB([0, 0], [0, 0]));
+    private readonly _platforms: MyRBush = new MyRBush();
+    private readonly _ball = new Ball(new AABB([0, 0], [0, 0]));
+
+    get platforms(): MyRBush {
+        return this._platforms;
+    }
+
+    get ball(): Ball {
+        return this._ball;
+    }
 
 }

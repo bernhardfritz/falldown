@@ -1,4 +1,5 @@
 const { merge } = require('webpack-merge');
+const path = require('path');
 const common = require('./webpack.common.js');
 
 module.exports = merge(common, {
@@ -7,5 +8,9 @@ module.exports = merge(common, {
     devServer: {
         clientLogLevel: "silent",
         contentBase: './dist',
+    },
+    output: {
+        filename: 'main.js',
+        path: path.resolve(__dirname, 'dist'),
     },
 });

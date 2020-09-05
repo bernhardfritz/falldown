@@ -5,65 +5,65 @@ import Vec2, { vec2 } from "./vec2";
 
 export default class CanvasBasedConsoleRenderer extends CanvasRenderer {
 
-    private static readonly CSS_SPECIFIER = '%c';
-    private static readonly NEW_LINE = '\n';
-    private static readonly SPACE = ' ';
+    private static readonly _CSS_SPECIFIER = '%c';
+    private static readonly _NEW_LINE = '\n';
+    private static readonly _SPACE = ' ';
 
-    private readonly step: vec2;
-    private readonly half_step: vec2;
-    private readonly data: Uint8ClampedArray;
-    private cachedOut = '';
-    private cachedStyles: string[] = [];
+    private readonly _step: vec2;
+    private readonly _half_step: vec2;
+    private readonly _data: Uint8ClampedArray;
+    private _cachedOut = '';
+    private _cachedStyles: string[] = [];
 
-    constructor(canvas: HTMLCanvasElement, private readonly cols: number, private readonly rows: number) {
+    constructor(canvas: HTMLCanvasElement, private readonly _cols: number, private readonly _rows: number) {
         super(canvas);
-        this.step = [ canvas.width / cols, canvas.height / rows ];
-        this.half_step = Vec2.scale(this.step, 0.5);
-        this.data = new Uint8ClampedArray(rows * cols * 3);
+        this._step = [ canvas.width / _cols, canvas.height / _rows ];
+        this._half_step = Vec2.scale(this._step, 0.5);
+        this._data = new Uint8ClampedArray(_rows * _cols * 3);
     }
 
     render(state: State): void {
         super.render(state);
         const imageData = this.ctx.getImageData(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-        for (let row = 0; row < this.rows; row++) {
-            const y = Math.floor(this.half_step[1] + row * this.step[1]);
-            for (let col = 0; col < this.cols; col++) {
-                const x = Math.floor(this.half_step[0] + col * this.step[0]);
-                this.data[row * this.cols * 3 + col * 3 + 0] = imageData.data[y * this.ctx.canvas.width * 4 + x * 4 + 0];
-                this.data[row * this.cols * 3 + col * 3 + 1] = imageData.data[y * this.ctx.canvas.width * 4 + x * 4 + 1];
-                this.data[row * this.cols * 3 + col * 3 + 2] = imageData.data[y * this.ctx.canvas.width * 4 + x * 4 + 2];
+        for (let row = 0; row < this._rows; row++) {
+            const y = Math.floor(this._half_step[1] + row * this._step[1]);
+            for (let col = 0; col < this._cols; col++) {
+                const x = Math.floor(this._half_step[0] + col * this._step[0]);
+                this._data[row * this._cols * 3 + col * 3 + 0] = imageData.data[y * this.ctx.canvas.width * 4 + x * 4 + 0];
+                this._data[row * this._cols * 3 + col * 3 + 1] = imageData.data[y * this.ctx.canvas.width * 4 + x * 4 + 1];
+                this._data[row * this._cols * 3 + col * 3 + 2] = imageData.data[y * this.ctx.canvas.width * 4 + x * 4 + 2];
             }
         }
         let out = '';
         const styles: string[] = [];
-        for (let row = 0; row < this.rows - 1; row += 2) {
+        for (let row = 0; row < this._rows - 1; row += 2) {
             let line = '';
-            for (let col = 0; col < this.cols; col++) {
-                const from = `rgb(${this.data[row * this.cols * 3 + col * 3 + 0]},${this.data[row * this.cols * 3 + col * 3 + 1]},${this.data[row * this.cols * 3 + col * 3 + 2]})`;
-                const to = `rgb(${this.data[(row + 1) * this.cols * 3 + col * 3 + 0]},${this.data[(row + 1) * this.cols * 3 + col * 3 + 1]},${this.data[(row + 1) * this.cols * 3 + col * 3 + 2]})`;
+            for (let col = 0; col < this._cols; col++) {
+                const from = `rgb(${this._data[row * this._cols * 3 + col * 3 + 0]},${this._data[row * this._cols * 3 + col * 3 + 1]},${this._data[row * this._cols * 3 + col * 3 + 2]})`;
+                const to = `rgb(${this._data[(row + 1) * this._cols * 3 + col * 3 + 0]},${this._data[(row + 1) * this._cols * 3 + col * 3 + 1]},${this._data[(row + 1) * this._cols * 3 + col * 3 + 2]})`;
                 const style = `background:linear-gradient(${from}, ${from} 50%, ${to} 50%, ${to})`;
                 if (styles.length === 0 || styles[styles.length - 1] !== style) {
                     styles.push(style);
-                    line += CanvasBasedConsoleRenderer.CSS_SPECIFIER;
+                    line += CanvasBasedConsoleRenderer._CSS_SPECIFIER;
                 }
-                line += CanvasBasedConsoleRenderer.SPACE;
+                line += CanvasBasedConsoleRenderer._SPACE;
             }
-            line += CanvasBasedConsoleRenderer.NEW_LINE;
+            line += CanvasBasedConsoleRenderer._NEW_LINE;
             out += line;
         }
 
         // style reset
-        out += CanvasBasedConsoleRenderer.CSS_SPECIFIER;
+        out += CanvasBasedConsoleRenderer._CSS_SPECIFIER;
         styles.push('');
 
-        if (this.cachedOut === out) {
-            if (Utils.isEqual(this.cachedStyles, styles)) {
+        if (this._cachedOut === out) {
+            if (Utils.isEqual(this._cachedStyles, styles)) {
                 return;
             }
-            this.cachedStyles = styles;
-            out += CanvasBasedConsoleRenderer.SPACE; // add space if console.log only differs by style in order to prevent browser from showing duplicate log index
+            this._cachedStyles = styles;
+            out += CanvasBasedConsoleRenderer._SPACE; // add space if console.log only differs by style in order to prevent browser from showing duplicate log index
         }
-        this.cachedOut = out;
+        this._cachedOut = out;
 
         console.log(out, ...styles);
     }

@@ -7,79 +7,79 @@ import Vec2, { vec2 } from './vec2';
 
 export default class StyledConsoleRenderer implements Renderer {
 
-    private static readonly BACKGROUND_COLOR = new Uint8ClampedArray([0, 0, 0]);
-    private static readonly CSS_SPECIFIER = '%c';
-    private static readonly NEW_LINE = '\n';
-    private static readonly SPACE = ' ';
+    private static readonly _BACKGROUND_COLOR = new Uint8ClampedArray([0, 0, 0]);
+    private static readonly _CSS_SPECIFIER = '%c';
+    private static readonly _NEW_LINE = '\n';
+    private static readonly _SPACE = ' ';
 
-    private readonly rows: number;
-    private readonly cols: number;
-    private readonly step: vec2;
-    private readonly half_step: vec2;
-    private readonly data: Uint8ClampedArray;
-    private cachedOut = '';
-    private cachedStyles: string[] = [];
+    private readonly _rows: number;
+    private readonly _cols: number;
+    private readonly _step: vec2;
+    private readonly _half_step: vec2;
+    private readonly _data: Uint8ClampedArray;
+    private _cachedOut = '';
+    private _cachedStyles: string[] = [];
 
     constructor(srcWidth: number, srcHeight: number, dstWidth: number, dstHeight: number) {
-        this.rows = Math.floor(dstHeight);
-        this.cols = Math.floor(dstWidth);
-        this.step = [ srcWidth / dstWidth, srcHeight / dstHeight ];
-        this.half_step = Vec2.scale(this.step, 0.5);
-        this.data = new Uint8ClampedArray(this.rows * this.cols * 3);
+        this._rows = Math.floor(dstHeight);
+        this._cols = Math.floor(dstWidth);
+        this._step = [ srcWidth / dstWidth, srcHeight / dstHeight ];
+        this._half_step = Vec2.scale(this._step, 0.5);
+        this._data = new Uint8ClampedArray(this._rows * this._cols * 3);
     }
 
     render(state: State): void {
-        for (let row = 0; row < this.rows; row++) {
-            const y = this.half_step[1] + row * this.step[1];
-            for (let col = 0; col < this.cols; col++) {
-                const x = this.half_step[0] + col * this.step[0];
+        for (let row = 0; row < this._rows; row++) {
+            const y = this._half_step[1] + row * this._step[1];
+            for (let col = 0; col < this._cols; col++) {
+                const x = this._half_step[0] + col * this._step[0];
                 if (state.ball.aabb.containsPoint(x, y)) {
-                    this.data[row * this.cols * 3 + col * 3 + 0] = Ball.COLOR[0];
-                    this.data[row * this.cols * 3 + col * 3 + 1] = Ball.COLOR[1];
-                    this.data[row * this.cols * 3 + col * 3 + 2] = Ball.COLOR[2];
+                    this._data[row * this._cols * 3 + col * 3 + 0] = Ball.COLOR[0];
+                    this._data[row * this._cols * 3 + col * 3 + 1] = Ball.COLOR[1];
+                    this._data[row * this._cols * 3 + col * 3 + 2] = Ball.COLOR[2];
                     continue;
                 }
                 if (state.platforms.collides({ minX: x, maxX: x, minY: y, maxY: y })) {
-                    this.data[row * this.cols * 3 + col * 3 + 0] = Platform.COLOR[0];
-                    this.data[row * this.cols * 3 + col * 3 + 1] = Platform.COLOR[1];
-                    this.data[row * this.cols * 3 + col * 3 + 2] = Platform.COLOR[2];
+                    this._data[row * this._cols * 3 + col * 3 + 0] = Platform.COLOR[0];
+                    this._data[row * this._cols * 3 + col * 3 + 1] = Platform.COLOR[1];
+                    this._data[row * this._cols * 3 + col * 3 + 2] = Platform.COLOR[2];
                     continue;
                 }
-                this.data[row * this.cols * 3 + col * 3 + 0] = StyledConsoleRenderer.BACKGROUND_COLOR[0];
-                this.data[row * this.cols * 3 + col * 3 + 1] = StyledConsoleRenderer.BACKGROUND_COLOR[1];
-                this.data[row * this.cols * 3 + col * 3 + 2] = StyledConsoleRenderer.BACKGROUND_COLOR[2];
+                this._data[row * this._cols * 3 + col * 3 + 0] = StyledConsoleRenderer._BACKGROUND_COLOR[0];
+                this._data[row * this._cols * 3 + col * 3 + 1] = StyledConsoleRenderer._BACKGROUND_COLOR[1];
+                this._data[row * this._cols * 3 + col * 3 + 2] = StyledConsoleRenderer._BACKGROUND_COLOR[2];
             }
         }
         let out = '';
         const styles: string[] = [];
-        for (let row = 0; row < this.rows - 1; row += 2) {
+        for (let row = 0; row < this._rows - 1; row += 2) {
             let line = '';
-            for (let col = 0; col < this.cols; col++) {
-                const from = `rgb(${this.data[row * this.cols * 3 + col * 3 + 0]},${this.data[row * this.cols * 3 + col * 3 + 1]},${this.data[row * this.cols * 3 + col * 3 + 2]})`;
-                const to = `rgb(${this.data[(row + 1) * this.cols * 3 + col * 3 + 0]},${this.data[(row + 1) * this.cols * 3 + col * 3 + 1]},${this.data[(row + 1) * this.cols * 3 + col * 3 + 2]})`;
+            for (let col = 0; col < this._cols; col++) {
+                const from = `rgb(${this._data[row * this._cols * 3 + col * 3 + 0]},${this._data[row * this._cols * 3 + col * 3 + 1]},${this._data[row * this._cols * 3 + col * 3 + 2]})`;
+                const to = `rgb(${this._data[(row + 1) * this._cols * 3 + col * 3 + 0]},${this._data[(row + 1) * this._cols * 3 + col * 3 + 1]},${this._data[(row + 1) * this._cols * 3 + col * 3 + 2]})`;
                 const style = `background:linear-gradient(${from}, ${from} 50%, ${to} 50%, ${to})`;
                 if (styles.length === 0 || styles[styles.length - 1] !== style) {
                     styles.push(style);
-                    line += StyledConsoleRenderer.CSS_SPECIFIER;
+                    line += StyledConsoleRenderer._CSS_SPECIFIER;
                 }
-                line += StyledConsoleRenderer.SPACE;
+                line += StyledConsoleRenderer._SPACE;
             }
-            line += StyledConsoleRenderer.NEW_LINE;
+            line += StyledConsoleRenderer._NEW_LINE;
             out += line;
         }
 
         // style reset
-        out += StyledConsoleRenderer.CSS_SPECIFIER;
+        out += StyledConsoleRenderer._CSS_SPECIFIER;
         styles.push('');
 
-        if (this.cachedOut === out) {
-            if (Utils.isEqual(this.cachedStyles, styles)) {
+        if (this._cachedOut === out) {
+            if (Utils.isEqual(this._cachedStyles, styles)) {
                 return;
             }
-            this.cachedStyles = styles;
-            out += StyledConsoleRenderer.SPACE; // add space if console.log only differs by style in order to prevent browser from showing duplicate log index
+            this._cachedStyles = styles;
+            out += StyledConsoleRenderer._SPACE; // add space if console.log only differs by style in order to prevent browser from showing duplicate log index
         }
-        this.cachedOut = out;
+        this._cachedOut = out;
 
         console.log(out, ...styles);
     }

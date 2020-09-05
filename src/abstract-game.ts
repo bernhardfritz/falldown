@@ -1,27 +1,27 @@
 export default abstract class AbstractGame {
 
-    private targetFrametime: number | undefined = undefined;
-    private handle = 0;
+    private _frametime: number | undefined = undefined;
+    private _handle = 0;
     protected time = 0;
 
-    set targetFps(targetFps: number) {
-        this.targetFrametime = 1000 / targetFps;
+    set fps(fps: number) {
+        this._frametime = 1000 / fps;
     }
 
     start(): void {
         if (!this.isRunning()) {
-            this.handle = window.requestAnimationFrame(this._loop);
+            this._handle = window.requestAnimationFrame(this._loop);
         }
     }
     
     abstract loop(dt: number): void;
 
     private _loop = (time: number) => {
-        this.handle = window.requestAnimationFrame(this._loop);
+        this._handle = window.requestAnimationFrame(this._loop);
         const dt = time - this.time;
-        if (this.targetFrametime !== undefined) {
-            if (dt > this.targetFrametime) {
-                this.time = time - (dt % this.targetFrametime);
+        if (this._frametime !== undefined) {
+            if (dt > this._frametime) {
+                this.time = time - (dt % this._frametime);
                 this.loop(dt);
             }
         } else {
@@ -31,12 +31,12 @@ export default abstract class AbstractGame {
     }
 
     stop(): void {
-        window.cancelAnimationFrame(this.handle);
-        this.handle = 0;
+        window.cancelAnimationFrame(this._handle);
+        this._handle = 0;
     }
 
     isRunning(): boolean {
-        return this.handle !== 0;
+        return this._handle !== 0;
     }
 
 }

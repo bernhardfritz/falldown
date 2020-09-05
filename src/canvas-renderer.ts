@@ -5,7 +5,7 @@ export default class CanvasRenderer implements Renderer {
 
     protected readonly ctx: CanvasRenderingContext2D;
 
-    constructor(private canvas: HTMLCanvasElement) {
+    constructor(canvas: HTMLCanvasElement) {
         this.ctx = canvas.getContext('2d');
     }
 
