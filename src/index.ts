@@ -1,5 +1,11 @@
 import Constants from './constants';
 import Game from './game';
+import './assets/style.css';
+
+if (navigator.platform.toLowerCase().indexOf('mac') !== -1) {
+    document.getElementById('key1').textContent = '⌥';
+    document.getElementById('key2').textContent = '⌘';
+}
 
 const game = new Game();
 game.fps = 24;
