@@ -18,65 +18,71 @@ export default class Game extends AbstractGame {
     private static readonly _FLOORS_PER_SCREEN = 7;
     private static readonly _FLOOR_HEIGHT = 10;
     private static readonly _HOLE_WIDTH_FRACTION = 1 / 5;
+    private static readonly _HOLE_WIDTH = Game._HOLE_WIDTH_FRACTION * Game._WIDTH;
     private static readonly _BALL_RADIUS_WIDTH_FRACTION = 1 / 20;
+    private static readonly _BALL_RADIUS = Game._BALL_RADIUS_WIDTH_FRACTION * Game._WIDTH;
     private readonly _state: State = new State();
-    private readonly _renderers: Renderer[] = [];
+    private readonly _renderer: Renderer;
 
     constructor() {
         super();
-        const holeWidth = Game._HOLE_WIDTH_FRACTION * Game._WIDTH;
-        const ballRadius = Game._BALL_RADIUS_WIDTH_FRACTION * Game._WIDTH;
-        let firstHole;
-        const platforms = [];
-        for (let y = Game._FLOOR_HEIGHT / 2; y < Game._HEIGHT; y += Game._HEIGHT / Game._FLOORS_PER_SCREEN) {
-            const hole = holeWidth + (Game._WIDTH - 2 * holeWidth) * Math.random();
-            if (firstHole === undefined) {
-                firstHole = hole;    
-            }
-            const l1 = (hole - holeWidth / 2) - 0;
-            const l2 = Game._WIDTH - (hole + holeWidth / 2);
-            platforms.push(new Platform(new AABB([l1 / 2, y], [l1 / 2, Game._FLOOR_HEIGHT / 2])), new Platform(new AABB([hole + holeWidth / 2 + l2 / 2, y], [l2 / 2, Game._FLOOR_HEIGHT / 2])));
+        for (let y = Game._FLOOR_HEIGHT / 2; y < Game._HEIGHT + Game._HEIGHT / Game._FLOORS_PER_SCREEN; y += Game._HEIGHT / Game._FLOORS_PER_SCREEN) { // 7 + 1 off-screen
+            this.state.platforms.push(...this._generateFloor(y));
         }
-        this._state.platforms.load(platforms);
+        const firstHole = this.state.platforms[0].aabb.maxX + Game._HOLE_WIDTH / 2;
         this._state.ball.aabb.center[0] = firstHole;
-        this._state.ball.aabb.halfDimension[0] = ballRadius;
-        this._state.ball.aabb.halfDimension[1] = ballRadius;
-        // this._renderers.push(new ConsoleRenderer(Game._WIDTH, Game._HEIGHT, Game._COLS, Game._ROWS));
-        // this._renderers.push(new StyledConsoleRenderer(Game._WIDTH, Game._HEIGHT, Game._COLS, Game._ROWS));
+        this._state.ball.aabb.halfDimension[0] = Game._BALL_RADIUS;
+        this._state.ball.aabb.halfDimension[1] = Game._BALL_RADIUS;
+        // this._renderer = new ConsoleRenderer(Game._WIDTH, Game._HEIGHT, Game._COLS, Game._ROWS);
+        // this._renderer = new StyledConsoleRenderer(Game._WIDTH, Game._HEIGHT, Game._COLS, Game._ROWS);
         const canvas = document.createElement('canvas');
         canvas.width = Game._WIDTH;
         canvas.height = Game._HEIGHT;
         // document.body.appendChild(canvas); // for debug
-        // this._renderers.push(new CanvasRenderer(canvas));
-        this._renderers.push(new CanvasBasedConsoleRenderer(canvas, Game._COLS, Game._ROWS));
+        // this._renderer = new CanvasRenderer(canvas);
+        this._renderer = new CanvasBasedConsoleRenderer(canvas, Game._COLS, Game._ROWS);
     }
 
     get state(): State {
         return this._state;
     }
     
-    loop(dt: number): void {
-        this.update(dt);
-        this.render();
-    }
-
     update(dt: number): void {
+        const dy = -0.05 * dt;
+        this._state.ball.aabb.center[1] += dy;
+        const platformsToBeRemoved = [];
+        for (const platform of this.state.platforms) {
+            platform.aabb.center[1] += dy;
+            if (platform.aabb.maxY < 0) {
+                platformsToBeRemoved.push(platform);
+            }
+        }
+        if (platformsToBeRemoved.length > 0) {
+            for (const platformToBeRemoved of platformsToBeRemoved) {
+                this.state.platforms.splice(this.state.platforms.indexOf(platformToBeRemoved), 1);
+            }
+            this.state.platforms.push(...this._generateFloor(platformsToBeRemoved[platformsToBeRemoved.length - 1].aabb.center[1] + Game._HEIGHT + Game._HEIGHT / Game._FLOORS_PER_SCREEN));
+        }
         if (this._state.ball.v[1] !== 0) {
             const ds: vec2 = [ 0, this._state.ball.v[1] * dt ];
             this._state.ball.aabb.center = Vec2.add(this._state.ball.aabb.center, ds);
-            const platforms = this._state.platforms.search(this._state.ball.aabb);
-            if (platforms.length > 0) {
-                const diff = (this._state.ball.aabb.halfDimension[1] + platforms[0].aabb.halfDimension[1]) - Math.abs(this._state.ball.aabb.center[1] - platforms[0].aabb.center[1]);
-                this._state.ball.aabb.center = Vec2.sub(this._state.ball.aabb.center, [0, Math.sign(ds[1]) * (diff + 0.001)]);
+            for (const platform of this.state.platforms) {
+                if (this.state.ball.aabb.intersects(platform.aabb)) {
+                    const diff = (this._state.ball.aabb.halfDimension[1] + platform.aabb.halfDimension[1]) - Math.abs(this._state.ball.aabb.center[1] - platform.aabb.center[1]);
+                    this._state.ball.aabb.center = Vec2.sub(this._state.ball.aabb.center, [0, Math.sign(ds[1]) * (diff + 0.001)]);
+                    break;
+                }
             }
         }
         if (this._state.ball.v[0] !== 0) {
             const ds: vec2 = [ this._state.ball.v[0] * dt, 0 ];
             this._state.ball.aabb.center = Vec2.add(this._state.ball.aabb.center, ds);
-            const platforms = this._state.platforms.search(this._state.ball.aabb);
-            if (platforms.length > 0) {
-                const diff = (this._state.ball.aabb.halfDimension[0] + platforms[0].aabb.halfDimension[0]) - Math.abs(this._state.ball.aabb.center[0] - platforms[0].aabb.center[0]);
-                this._state.ball.aabb.center = Vec2.sub(this._state.ball.aabb.center, [Math.sign(ds[0]) * (diff + 0.001), 0]);
+            for (const platform of this.state.platforms) {
+                if (this.state.ball.aabb.intersects(platform.aabb)) {
+                    const diff = (this._state.ball.aabb.halfDimension[0] + platform.aabb.halfDimension[0]) - Math.abs(this._state.ball.aabb.center[0] - platform.aabb.center[0]);
+                    this._state.ball.aabb.center = Vec2.sub(this._state.ball.aabb.center, [Math.sign(ds[0]) * (diff + 0.001), 0]);
+                    break;
+                }
             }
         }
         if (this._state.ball.aabb.minX < 0) {
@@ -93,10 +99,15 @@ export default class Game extends AbstractGame {
         }
     }
 
-    render(): void {
-        for (const renderer of this._renderers) {
-            renderer.render(this._state);
-        }
+    render(dt: number): void {
+        this._renderer.render(this._state);
+    }
+
+    private _generateFloor(y: number) {
+        const hole = Game._HOLE_WIDTH + (Game._WIDTH - 2 * Game._HOLE_WIDTH) * Math.random();
+        const l1 = (hole - Game._HOLE_WIDTH / 2) - 0;
+        const l2 = Game._WIDTH - (hole + Game._HOLE_WIDTH / 2);
+        return [new Platform(new AABB([l1 / 2, y], [l1 / 2, Game._FLOOR_HEIGHT / 2])), new Platform(new AABB([hole + Game._HOLE_WIDTH / 2 + l2 / 2, y], [l2 / 2, Game._FLOOR_HEIGHT / 2]))];
     }
 
 }

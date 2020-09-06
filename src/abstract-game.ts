@@ -2,7 +2,9 @@ export default abstract class AbstractGame {
 
     private _frametime: number | undefined = undefined;
     private _handle = 0;
-    protected time = 0;
+    private _updateTimestamp = 0;
+    private _renderTimestamp = 0;
+    private _pauseTimestamp = Date.now();
 
     set fps(fps: number) {
         this._frametime = 1000 / fps;
@@ -10,29 +12,40 @@ export default abstract class AbstractGame {
 
     start(): void {
         if (!this.isRunning()) {
+            const pauseDuration = Date.now() - this._pauseTimestamp;
+            this._updateTimestamp += pauseDuration;
+            this._renderTimestamp += pauseDuration;
             this._handle = window.requestAnimationFrame(this._loop);
         }
     }
     
-    abstract loop(dt: number): void;
+    abstract update(dt: number): void;
+
+    abstract render(dt: number): void;
 
     private _loop = (time: number) => {
         this._handle = window.requestAnimationFrame(this._loop);
-        const dt = time - this.time;
+        
+        const dtUpdate = time - this._updateTimestamp;
+        this._updateTimestamp = time;
+        this.update(dtUpdate);
+
+        const dtRender = time - this._renderTimestamp;
         if (this._frametime !== undefined) {
-            if (dt > this._frametime) {
-                this.time = time - (dt % this._frametime);
-                this.loop(dt);
+            if (dtRender > this._frametime) {
+                this._renderTimestamp = time - (dtRender % this._frametime);
+                this.render(dtRender);
             }
         } else {
-            this.time = time;
-            this.loop(dt);
+            this._renderTimestamp = time;
+            this.render(dtRender);
         }
     }
 
     stop(): void {
         window.cancelAnimationFrame(this._handle);
         this._handle = 0;
+        this._pauseTimestamp = Date.now();
     }
 
     isRunning(): boolean {

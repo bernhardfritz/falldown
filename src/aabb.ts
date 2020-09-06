@@ -1,7 +1,6 @@
-import { BBox } from "rbush";
 import Vec2, { vec2 } from "./vec2";
 
-export default class AABB implements BBox {
+export default class AABB {
     
     constructor(public center: vec2, public halfDimension: vec2) {}
 

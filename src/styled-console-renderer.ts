@@ -32,22 +32,26 @@ export default class StyledConsoleRenderer implements Renderer {
         for (let row = 0; row < this._rows; row++) {
             const y = this._half_step[1] + row * this._step[1];
             for (let col = 0; col < this._cols; col++) {
-                const x = this._half_step[0] + col * this._step[0];
-                if (state.ball.aabb.containsPoint(x, y)) {
-                    this._data[row * this._cols * 3 + col * 3 + 0] = Ball.COLOR[0];
-                    this._data[row * this._cols * 3 + col * 3 + 1] = Ball.COLOR[1];
-                    this._data[row * this._cols * 3 + col * 3 + 2] = Ball.COLOR[2];
-                    continue;
+                nextCol: {
+                    const x = this._half_step[0] + col * this._step[0];
+                    if (state.ball.aabb.containsPoint(x, y)) {
+                        this._data[row * this._cols * 3 + col * 3 + 0] = Ball.COLOR[0];
+                        this._data[row * this._cols * 3 + col * 3 + 1] = Ball.COLOR[1];
+                        this._data[row * this._cols * 3 + col * 3 + 2] = Ball.COLOR[2];
+                        continue;
+                    }
+                    for (const platform of state.platforms) {
+                        if (platform.aabb.containsPoint(x, y)) {
+                            this._data[row * this._cols * 3 + col * 3 + 0] = Platform.COLOR[0];
+                            this._data[row * this._cols * 3 + col * 3 + 1] = Platform.COLOR[1];
+                            this._data[row * this._cols * 3 + col * 3 + 2] = Platform.COLOR[2];
+                            break nextCol;
+                        }
+                    }
+                    this._data[row * this._cols * 3 + col * 3 + 0] = StyledConsoleRenderer._BACKGROUND_COLOR[0];
+                    this._data[row * this._cols * 3 + col * 3 + 1] = StyledConsoleRenderer._BACKGROUND_COLOR[1];
+                    this._data[row * this._cols * 3 + col * 3 + 2] = StyledConsoleRenderer._BACKGROUND_COLOR[2];
                 }
-                if (state.platforms.collides({ minX: x, maxX: x, minY: y, maxY: y })) {
-                    this._data[row * this._cols * 3 + col * 3 + 0] = Platform.COLOR[0];
-                    this._data[row * this._cols * 3 + col * 3 + 1] = Platform.COLOR[1];
-                    this._data[row * this._cols * 3 + col * 3 + 2] = Platform.COLOR[2];
-                    continue;
-                }
-                this._data[row * this._cols * 3 + col * 3 + 0] = StyledConsoleRenderer._BACKGROUND_COLOR[0];
-                this._data[row * this._cols * 3 + col * 3 + 1] = StyledConsoleRenderer._BACKGROUND_COLOR[1];
-                this._data[row * this._cols * 3 + col * 3 + 2] = StyledConsoleRenderer._BACKGROUND_COLOR[2];
             }
         }
         let out = '';
