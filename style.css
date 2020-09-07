@@ -1,0 +1,54 @@
+@font-face {
+    font-family: 'Open Sans';
+    src: url(02a991a230170c6ec5bc2171a68941de.woff2) format('woff2'),
+         url(74626abbe02483abb76d2253cb9de5e5.woff) format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+kbd {
+    background-color: #eee;
+    border-radius: 3px;
+    border: 1px solid #b4b4b4;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .2), 0 2px 0 0 rgba(255, 255, 255, .7) inset;
+    color: #333;
+    display: inline-block;
+    font-size: .85em;
+    font-weight: 700;
+    line-height: 1;
+    padding: 2px 4px;
+    white-space: nowrap;
+}
+
+body {
+    font-family: 'Open Sans';
+}
+
+.hint {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 32px;
+    pointer-events: none;
+    animation-name: fade;
+    animation-iteration-count: infinite;
+    animation-duration: 6s;
+}
+
+#hint2 {
+    animation-delay: -4s;
+}
+
+#hint3 {
+    animation-delay: -2s;
+}
+
+@keyframes fade {
+    0% {opacity: 0;}
+    20% {opacity: 1;}
+    33% {opacity: 1;}
+    53% {opacity: 0;}
+    100% {opacity: 0;}
+}
+
