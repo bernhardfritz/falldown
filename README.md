@@ -8,7 +8,7 @@ Essentially a [Falldown!](https://apps.apple.com/us/app/falldown/id323493586) cl
 
 ```bash
 yarn install
-yarn start
+yarn run start
 ```
 
 ![screenshot](https://i.imgur.com/qerHw3h.gif)
