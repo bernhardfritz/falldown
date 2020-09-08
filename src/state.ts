@@ -6,5 +6,7 @@ export default class State {
 
     public readonly platforms: Platform[] = [];
     public readonly ball = new Ball(new AABB([0, 0], [0, 0]));
+    public score = 0;
+    public gameover = false;
 
 }

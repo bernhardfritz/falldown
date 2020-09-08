@@ -37,15 +37,15 @@ export default class ConsoleRenderer implements Renderer {
             for (let col = 0; col < this._cols; col++) {
                 nextCol: {
                     const x = this._half_step[0] + col * this._step[0];
-                    if (state.ball.aabb.containsPoint(x, y)) {
-                        this._grid[row][col] = true;
-                        continue;
-                    }
                     for (const platform of state.platforms) {
                         if (platform.aabb.containsPoint(x, y)) {
                             this._grid[row][col] = true;
                             break nextCol;
                         }
+                    }
+                    if (state.ball.aabb.containsPoint(x, y)) {
+                        this._grid[row][col] = true;
+                        continue;
                     }
                     this._grid[row][col] = false;
                 }

@@ -16,5 +16,9 @@ export default class Utils {
         }
         return true;
     }
+
+    static isMac(): boolean {
+        return navigator.platform.indexOf('Mac') !== -1;
+    }
     
 }

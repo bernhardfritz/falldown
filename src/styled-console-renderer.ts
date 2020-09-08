@@ -34,12 +34,6 @@ export default class StyledConsoleRenderer implements Renderer {
             for (let col = 0; col < this._cols; col++) {
                 nextCol: {
                     const x = this._half_step[0] + col * this._step[0];
-                    if (state.ball.aabb.containsPoint(x, y)) {
-                        this._data[row * this._cols * 3 + col * 3 + 0] = Ball.COLOR[0];
-                        this._data[row * this._cols * 3 + col * 3 + 1] = Ball.COLOR[1];
-                        this._data[row * this._cols * 3 + col * 3 + 2] = Ball.COLOR[2];
-                        continue;
-                    }
                     for (const platform of state.platforms) {
                         if (platform.aabb.containsPoint(x, y)) {
                             this._data[row * this._cols * 3 + col * 3 + 0] = Platform.COLOR[0];
@@ -47,6 +41,12 @@ export default class StyledConsoleRenderer implements Renderer {
                             this._data[row * this._cols * 3 + col * 3 + 2] = Platform.COLOR[2];
                             break nextCol;
                         }
+                    }
+                    if (state.ball.aabb.containsPoint(x, y)) {
+                        this._data[row * this._cols * 3 + col * 3 + 0] = Ball.COLOR[0];
+                        this._data[row * this._cols * 3 + col * 3 + 1] = Ball.COLOR[1];
+                        this._data[row * this._cols * 3 + col * 3 + 2] = Ball.COLOR[2];
+                        continue;
                     }
                     this._data[row * this._cols * 3 + col * 3 + 0] = StyledConsoleRenderer._BACKGROUND_COLOR[0];
                     this._data[row * this._cols * 3 + col * 3 + 1] = StyledConsoleRenderer._BACKGROUND_COLOR[1];
