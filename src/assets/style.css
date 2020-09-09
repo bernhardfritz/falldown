@@ -6,6 +6,10 @@
     font-style: normal;
 }
 
+body {
+    font-family: 'Open Sans';
+}
+
 kbd {
     background-color: #eee;
     border-radius: 3px;
@@ -20,8 +24,12 @@ kbd {
     white-space: nowrap;
 }
 
-body {
-    font-family: 'Open Sans';
+@keyframes fade {
+    0% {opacity: 0;}
+    20% {opacity: 1;}
+    33% {opacity: 1;}
+    53% {opacity: 0;}
+    100% {opacity: 0;}
 }
 
 .hint {
@@ -42,12 +50,4 @@ body {
 
 #hint3 {
     animation-delay: -2s;
-}
-
-@keyframes fade {
-    0% {opacity: 0;}
-    20% {opacity: 1;}
-    33% {opacity: 1;}
-    53% {opacity: 0;}
-    100% {opacity: 0;}
 }

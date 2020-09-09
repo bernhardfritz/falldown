@@ -16,7 +16,7 @@ module.exports = {
             },
             {
                 test: /\.(woff|woff2)$/,
-                use: ['file-loader'],
+                use: 'file-loader',
             },
         ],
     },
@@ -27,6 +27,7 @@ module.exports = {
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: './src/assets/template.html',
+            favicon: './src/assets/favicon.ico',
         }),
         new MiniCssExtractPlugin({
             filename: 'style.css',
